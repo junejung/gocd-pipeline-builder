@@ -1,63 +1,130 @@
-{ "group": "{{ PORTFOLIO }}",
-                    "pipeline": {
-                    "label_template": "${COUNT}",
-                    "enable_pipeline_locking": true,
-                    "name": "{{ INVENTORY_NAME }}",
-                    "template": null,
-                    "materials": [
-                      {
-                        "type": "svn",
-                        "attributes": {
-                          "url": "{{ INVENTORY }}",
-                          "auto_update": true,
-                          "username": "readonly",
-                          "encrypted_password": "Yej9Wk9BBkMV2XxIePhBKw=="
-                        }
-                      }
-                    ],
-                    "stages": [
-                      {
-                        "name": "UnitTests",
-                        "fetch_materials": true,
-                        "clean_working_directory": false,
-                        "never_cleanup_artifacts": false,
-                        "approval": {
-                          "type": "success",
-                          "authorization": {
-                            "roles": [],
-                            "users": []
-                          }
-                        },
-                        "environment_variables": [],
-                        "jobs": [
-                          {
-                            "name": "UnitTests",
-                            "run_instance_count": null,
-                            "timeout": 0,
-                            "environment_variables": [],
-                            "resources": [],
-                            "tasks": [
-                              {
-                                "type": "exec",
-                                "attributes": {
-                                  "run_if": [
-                                    "passed"
-                                  ],
-                                  "command": "mvn",
-                                  "arguments": [
-                                    "clean",
-                                    "test",
-                                    "-U",
-                                    "-e",
-                                    "-B"
-                                  ],
-                                  "working_directory": null
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                }
-              }
+{
+  "group": "{{ PORTFOLIO }}",
+  "pipeline": {
+    "label_template": "${COUNT}",
+    "enable_pipeline_locking": true,
+    "name": "{{ INVENTORY_NAME }}",
+    "template": null,
+    "materials": [{
+      "type": "svn",
+      "attributes": {
+        "url": "{{ INVENTORY }}",
+        "auto_update": true,
+        "username": "readonly",
+        "encrypted_password": "Yej9Wk9BBkMV2XxIePhBKw=="
+      }
+    }],
+    "stages": [{
+        "name": "UnitTests",
+        "fetch_materials": true,
+        "clean_working_directory": false,
+        "never_cleanup_artifacts": false,
+        "approval": {
+          "type": "success",
+          "authorization": {
+            "roles": [],
+            "users": []
+          }
+        },
+        "environment_variables": [],
+        "jobs": [{
+          "name": "UnitTests",
+          "run_instance_count": null,
+          "timeout": 0,
+          "environment_variables": [],
+          "resources": [],
+          "tasks": [{
+            "type": "exec",
+            "attributes": {
+              "run_if": [
+                "passed"
+              ],
+              "command": "mvn",
+              "arguments": [
+                "clean",
+                "test",
+                "-U",
+                "-e",
+                "-B"
+              ],
+              "working_directory": null
+            }
+          }]
+        }]
+      }, {
+        "name": "Publish",
+        "fetch_materials": true,
+        "clean_working_directory": false,
+        "never_cleanup_artifacts": false,
+        "approval": {
+          "type": "success",
+          "authorization": {
+            "roles": [],
+            "users": []
+          }
+        },
+        "environment_variables": [],
+        "jobs": [{
+          "name": "PublishToNexus",
+          "run_instance_count": null,
+          "timeout": null,
+          "environment_variables": [],
+          "resources": [],
+          "tasks": [{
+            "type": "exec",
+            "attributes": {
+              "run_if": [
+                "passed"
+              ],
+              "on_cancel": null,
+              "command": "/bin/bash",
+              "arguments": [
+                "-c",
+                "mvn clean versions:set -DnewVersion=`/ngs/app/go/bin/set_package_version.rb ${GO_PIPELINE_COUNTER}` -U -e -B"
+              ],
+              "working_directory": null
+            }
+          }, {
+            "type": "exec",
+            "attributes": {
+              "run_if": [],
+              "on_cancel": null,
+              "command": "mvn",
+              "arguments": [
+                "clean",
+                "deploy",
+                "-DskipTests",
+                "-U",
+                "-e",
+                "-B"
+              ],
+              "working_directory": null
+            }
+          }, {
+            "type": "exec",
+            "attributes": {
+              "run_if": [
+                "passed"
+              ],
+              "on_cancel": null,
+              "command": "/bin/bash",
+              "arguments": [
+                "-c",
+                "echo `/var/go/bin/get_package_version.rb` > build_version.txt"
+              ],
+              "working_directory": null
+            }
+          }],
+          "tabs": [],
+          "artifacts": [{
+            "source": "build_version.txt",
+            "destination": "",
+            "type": "build"
+          }],
+          "properties": null
+        }]
+      }
+
+    ]
+  }
+}
