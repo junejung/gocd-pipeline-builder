@@ -3,10 +3,10 @@ import yaml
 import os
 
 inventory_file = open('inventory.yaml')
-inventories = yaml.load(inventory_file)
+portfolios = yaml.load(inventory_file)
 
 
-for portfolio in inventories['pipelines']:
+for portfolio in portfolios['pipelines']:
     with open(os.path.join('templates', 'demo_pipeline.json')) as template_file:
         template_json = template_file.read()
         template = Template(template_json)
