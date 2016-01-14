@@ -1,8 +1,8 @@
-{ "group": "testing",
+{ "group": "{{ PORTFOLIO }}",
                     "pipeline": {
                     "label_template": "${COUNT}",
                     "enable_pipeline_locking": true,
-                    "name": "AffiliatesServiceNew",
+                    "name": "{{ INVENTORY_NAME }}",
                     "template": null,
                     "materials": [
                       {
