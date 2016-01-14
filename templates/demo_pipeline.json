@@ -1,0 +1,63 @@
+{ "group": "testing",
+                    "pipeline": {
+                    "label_template": "${COUNT}",
+                    "enable_pipeline_locking": true,
+                    "name": "AffiliatesServiceNew",
+                    "template": null,
+                    "materials": [
+                      {
+                        "type": "svn",
+                        "attributes": {
+                          "url": "{{ INVENTORY }}",
+                          "auto_update": true,
+                          "username": "readonly",
+                          "encrypted_password": "Yej9Wk9BBkMV2XxIePhBKw=="
+                        }
+                      }
+                    ],
+                    "stages": [
+                      {
+                        "name": "UnitTests",
+                        "fetch_materials": true,
+                        "clean_working_directory": false,
+                        "never_cleanup_artifacts": false,
+                        "approval": {
+                          "type": "success",
+                          "authorization": {
+                            "roles": [],
+                            "users": []
+                          }
+                        },
+                        "environment_variables": [],
+                        "jobs": [
+                          {
+                            "name": "UnitTests",
+                            "run_instance_count": null,
+                            "timeout": 0,
+                            "environment_variables": [],
+                            "resources": [],
+                            "tasks": [
+                              {
+                                "type": "exec",
+                                "attributes": {
+                                  "run_if": [
+                                    "passed"
+                                  ],
+                                  "command": "mvn",
+                                  "arguments": [
+                                    "clean",
+                                    "test",
+                                    "-U",
+                                    "-e",
+                                    "-B"
+                                  ],
+                                  "working_directory": null
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                }
+              }
