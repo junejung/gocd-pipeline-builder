@@ -1,0 +1,78 @@
+links": {
+    "self": {
+      "href": "http://rn2d-aos-server-01.rno.apple.com:8153/go/api/admin/pipelines/DEMO_PIPELINE"
+    },
+    "doc": {
+      "href": "http://api.go.cd/#pipeline_config"
+    },
+    "find": {
+      "href": "https://ci.example.com/go/api/admin/pipelines/:name"
+    }
+  },
+  "label_template": "${COUNT}",
+  "enable_pipeline_locking": true,
+  "name": "new_pipeline",
+  "template": null,
+  "parameters": [],
+  "environment_variables": [],
+  "materials": [
+    {
+      "type": "svn",
+      "attributes": {
+        "url": "https://storesvn.apple.com/aos/internal/community/CommunityContentService/TRUNK/",
+        "destination": "dest",
+        "filter": null,
+        "name": null,
+        "auto_update": true,
+        "branch": "master",
+        "submodule_folder": null
+      }
+    }
+  ],
+  "stages": [
+    {
+      "name": "UnitTest",
+      "fetch_materials": true,
+      "clean_working_directory": false,
+      "never_cleanup_artifacts": false,
+      "approval": {
+        "type": "success",
+        "authorization": {
+          "roles": [],
+          "users": []
+        }
+      },
+      "environment_variables": [],
+      "jobs": [
+        {
+          "name": "unitTest",
+          "run_instance_count": null,
+          "timeout": "never",
+          "environment_variables": [],
+          "resources": [],
+          "tasks": [
+            {
+              "type": "exec",
+              "attributes": {
+                "run_if": [
+                  "passed"
+                ],
+                "command": "mvn",
+                "arguments": [
+                  "clean",
+                  "install"
+                ],
+                "working_directory": null
+              }
+            }
+          ],
+          "tabs": [],
+          "artifacts": [],
+          "properties": null
+        }
+      ]
+    }
+  ],
+  "tracking_tool": null,
+  "timer": null
+}

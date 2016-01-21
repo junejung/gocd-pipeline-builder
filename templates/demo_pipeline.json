@@ -123,6 +123,77 @@
           }],
           "properties": null
         }]
+      }, {
+        "name": "DeployToDev",
+        "fetch_materials": true,
+        "clean_working_directory": false,
+        "never_cleanup_artifacts": false,
+        "approval": {
+          "type": "success",
+          "authorization": {
+            "roles": [],
+            "users": []
+          }
+        },
+        "environment_variables": [],
+        "jobs": [{
+          "name": "Deploy",
+          "run_instance_count": null,
+          "timeout": 0,
+          "environment_variables": [{
+            "secure": false,
+            "name": "context_layer",
+            "value": "{{ CONTEXT_LAYER }}"
+          }, {
+            "secure": false,
+            "name": "groupId",
+            "value": "{{  GROUPID }}"
+          }, {
+            "secure": false,
+            "name": "artifactId",
+            "value": "{{  ARTIFACTID }}"
+          }],
+          "resources": [],
+          "tasks": [{
+            "type": "fetch",
+            "attributes": {
+              "run_if": [
+                "passed"
+              ],
+              "on_cancel": null,
+              "pipeline": "{{ INVENTORY_NAME }}",
+              "stage": "Publish",
+              "job": "PublishToNexus",
+              "is_source_a_file": true,
+              "source": "build_version.txt",
+              "destination": ""
+            }
+          }, {
+            "type": "exec",
+            "attributes": {
+              "run_if": [
+                "passed"
+              ],
+              "on_cancel": null,
+              "command": "/bin/bash",
+              "arguments": [
+                "-c",
+                "PYTHONUNBUFFERED=true /ngs/app/go/bin/deploy-artifact.py GOCD ${groupId} ${artifactId} `cat build_version.txt` ${context_layer}"
+              ],
+              "working_directory": null
+            }
+          }, {
+            "type": "exec",
+            "attributes": {
+              "run_if": [
+                "passed"
+              ],
+              "on_cancel": null,
+              "command": "pwd",
+              "working_directory": null
+            }
+          }]
+        }]
       }
 
     ]
